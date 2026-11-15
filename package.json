@@ -1,0 +1,50 @@
+{
+  "name": "dsh-global-fonts",
+  "version": "0.2.0",
+  "description": "把本机思源字体的用途表钉进系统提示词（正文 思源黑体 CN Medium、标题 思源宋体 CN Heavy、西文 思源黑体、加粗 思源黑体 CN Bold），禁止模型再检测、比较、提问字体；设置页提供可视化面板，按用途 × 中文/西文自定义任意本机字体。",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "keywords": [
+    "dsh-plugin",
+    "dsh",
+    "deepseek-harness",
+    "fonts",
+    "fonts-chinese",
+    "office",
+    "word",
+    "system-prompt"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "check": "node --check index.js && node --check client.js",
+    "test": "node self-test.mjs"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": ">=0.0.1-rc.1 <0.1.0 || >=0.1.0-rc.1 <0.2.0-0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ],
+      "platform": "web"
+    }
+  }
+}

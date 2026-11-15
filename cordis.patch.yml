@@ -1,0 +1,5 @@
+# dsh-global-fonts 的 cordis patch：把插件本身挂进 profile。
+# 临时关闭用环境变量 DSH_GLOBAL_FONTS=off，不用改这里、不用重启。
+- insert:
+    - id: dsh-global-fonts
+      name: dsh-global-fonts
