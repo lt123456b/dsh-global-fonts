@@ -46,5 +46,13 @@
       ],
       "platform": "web"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lt123456b/dsh-global-fonts.git"
+  },
+  "homepage": "https://github.com/lt123456b/dsh-global-fonts#readme",
+  "bugs": {
+    "url": "https://github.com/lt123456b/dsh-global-fonts/issues"
   }
 }
