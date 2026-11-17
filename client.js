@@ -19,7 +19,6 @@ window.__ModuleLoader__.load({
 
     const ROUTE = '/global-fonts-api'
     const STYLE_ID = 'dsh-global-fonts'
-    const LIST_ID = 'sf-font-list'
     const CSS = [
       '.sf-panel{display:flex;flex-direction:column;gap:14px;padding:4px 0;font-size:13px;color:var(--dsw-alias-label-primary)}',
       '.sf-card{border:1px solid var(--dsw-alias-border-l1);border-radius:10px;background:var(--dsw-alias-bg-layer-1);padding:12px 14px;display:flex;flex-direction:column;gap:10px}',
@@ -40,9 +39,16 @@ window.__ModuleLoader__.load({
       '.sf-role small{display:block;font-weight:400;font-size:11px;color:var(--dsw-alias-label-secondary);margin-top:1px}',
       '.sf-input{background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);border:1px solid var(--dsw-alias-border-l1);border-radius:8px;padding:6px 10px;font-size:12px;outline:none;font-family:inherit;width:100%;box-sizing:border-box}',
       '.sf-input:focus{border-color:var(--dsw-alias-brand-primary)}',
+      '.sf-cell{position:relative}',
+      '.sf-dd{position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:260px;overflow:auto;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);z-index:200;padding:4px}',
+      '.sf-dd-item{display:block;width:100%;text-align:left;background:none;border:none;color:var(--dsw-alias-label-primary);font-size:12px;padding:5px 8px;border-radius:6px;cursor:pointer;font-family:inherit}',
+      '.sf-dd-item:hover{background:var(--dsw-alias-bg-layer-2)}',
+      '.sf-dd-item.on{color:var(--dsw-alias-brand-primary);font-weight:600}',
+      '.sf-dd-empty{font-size:12px;color:var(--dsw-alias-label-secondary);padding:6px 8px}',
       '.sf-input::placeholder{color:var(--dsw-alias-label-secondary);opacity:.7}',
       '.sf-pre{margin:0;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.6;color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-bg-base);border:1px solid var(--dsw-alias-border-l1);border-radius:8px;padding:10px;max-height:300px;overflow:auto;font-family:ui-monospace,Consolas,monospace}',
       '.sf-bad{color:#e5484d}',
+      '.sf-link{color:var(--dsw-alias-brand-primary);text-decoration:none;border-bottom:1px solid currentColor}',
       '.sf-ok{color:#30a46c}',
     ].join('\n')
 
@@ -74,10 +80,17 @@ window.__ModuleLoader__.load({
       })
     }
 
-    /** 一格：一个 input + 共享 datalist，打字可搜，也能直接粘字体名。 */
+    /**
+     * 一格：输入框 + 自绘下拉。
+     * 不用 <datalist>：Chrome 对上千条 option 不渲染文字，只给一堆空白行，
+     * 而且没法控制在面板里的层级。自己画一个 div 列表最稳。
+     */
     function FontCell(props) {
       const [draft, setDraft] = useState(props.value)
+      const [open, setOpen] = useState(false)
+      const [q, setQ] = useState('')
       const timer = useRef(null)
+      const box = useRef(null)
 
       useEffect(() => {
         setDraft(props.value)
@@ -90,38 +103,99 @@ window.__ModuleLoader__.load({
         [],
       )
 
+      // 点到外面就收起来
+      useEffect(() => {
+        if (!open) return undefined
+        const onDoc = (e) => {
+          if (box.current && !box.current.contains(e.target)) setOpen(false)
+        }
+        document.addEventListener('mousedown', onDoc)
+        return () => document.removeEventListener('mousedown', onDoc)
+      }, [open])
+
+      // families: [家族名, 1|0 是否中文, [[face, 字重, 标签, 需bold], ...]]
+      const all = useMemo(() => {
+        const out = []
+        for (const f of props.families || []) {
+          const name = f[0]
+          for (const w of f[2] || []) {
+            const face = w[0]
+            if (!face) continue
+            out.push({ face, text: name + ' · ' + (w[2] || w[1]) })
+          }
+        }
+        return out
+      }, [props.families])
+
+      const keyword = q.trim().toLowerCase()
+      const hits = useMemo(() => {
+        if (!keyword) return all.slice(0, 120)
+        const out = []
+        for (const it of all) {
+          if (it.face.toLowerCase().indexOf(keyword) >= 0 || it.text.toLowerCase().indexOf(keyword) >= 0) {
+            out.push(it)
+            if (out.length >= 120) break
+          }
+        }
+        return out
+      }, [all, keyword])
+
       const onInput = (e) => {
         const v = e.target.value
         setDraft(v)
+        setQ(v)
+        setOpen(true)
         if (timer.current) clearTimeout(timer.current)
         timer.current = setTimeout(() => {
           if (v.trim() && v !== props.value) props.onPick(v.trim())
         }, 400)
       }
 
-      return h('input', {
-        className: 'sf-input',
-        type: 'text',
-        list: LIST_ID,
-        value: draft,
-        disabled: props.disabled,
-        placeholder: '点开选，或直接输字体名',
-        onChange: onInput,
-      })
-    }
-
-    function FontList(props) {
-      // families: [家族名, 1|0 是否中文, [[face, 字重, 标签, 需bold], ...]]
-      const options = []
-      for (const f of props.families || []) {
-        const [name, , weights] = f
-        for (const w of weights || []) {
-          const face = w[0]
-          const label = w[2] || String(w[1])
-          options.push(h('option', { key: face, value: face, label: name + ' · ' + label }))
-        }
+      const choose = (face) => {
+        setDraft(face)
+        setOpen(false)
+        props.onPick(face)
       }
-      return h('datalist', { id: LIST_ID }, options)
+
+      return h(
+        'div',
+        { className: 'sf-cell', ref: box },
+        h('input', {
+          className: 'sf-input',
+          type: 'text',
+          value: draft,
+          disabled: props.disabled,
+          placeholder: '点开选，或直接输字体名',
+          onFocus: () => {
+            setQ('')
+            setOpen(true)
+          },
+          onChange: onInput,
+        }),
+        open && !props.disabled
+          ? h(
+              'div',
+              { className: 'sf-dd' },
+              hits.length
+                ? hits.map((it) =>
+                    h(
+                      'button',
+                      {
+                        key: it.face,
+                        type: 'button',
+                        className: 'sf-dd-item' + (it.face === props.value ? ' on' : ''),
+                        onMouseDown: (e) => {
+                          e.preventDefault()
+                          choose(it.face)
+                        },
+                      },
+                      it.text,
+                    ),
+                  )
+                : h('div', { className: 'sf-dd-empty' }, all.length ? '没有匹配的字体' : '还没读到字体列表'),
+            )
+          : null,
+      )
     }
 
     function Panel() {
@@ -233,18 +307,31 @@ window.__ModuleLoader__.load({
             h(FontCell, {
               key: 'c-' + m.key,
               value: (roles[m.key] && roles[m.key].cjk) || '',
+              families: data.fonts,
               disabled: !!busy,
               onPick: (face) => pick(m.key, 'cjk', face),
             }),
             h(FontCell, {
               key: 'x-' + m.key,
               value: (roles[m.key] && roles[m.key].latin) || '',
+              families: data.fonts,
               disabled: !!busy,
               onPick: (face) => pick(m.key, 'latin', face),
             }),
           ]),
         ),
-        h(FontList, { families: data.fonts }),
+        data.missing && data.missing.length
+          ? h('div', { className: 'sf-bad', style: { marginTop: 8, fontSize: 12 } },
+              '本机没装：' + data.missing.join('、') +
+                ' —— 生成文档时会自动换成同类字体；想彻底对齐，点上面的框改成已装的字体。')
+          : null,
+        h('div', { className: 'sf-hint' },
+          '默认那套是思源字体。没装的话去下（免费开源）：',
+          h('a', { className: 'sf-link', href: 'https://github.com/adobe-fonts/source-han-sans/releases', target: '_blank', rel: 'noreferrer' }, '思源黑体'),
+          ' ／ ',
+          h('a', { className: 'sf-link', href: 'https://github.com/adobe-fonts/source-han-serif/releases', target: '_blank', rel: 'noreferrer' }, '思源宋体'),
+          '。装好回来点「重读字体」。',
+        ),
         h('div', { className: 'sf-hint' },
           '输入框可以打字搜，也可以直接从下拉里挑。改完自动保存，下一句话就生效。',
           data.fontsOk

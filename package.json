@@ -1,6 +1,6 @@
 {
   "name": "dsh-global-fonts",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "把本机思源字体的用途表钉进系统提示词（正文 思源黑体 CN Medium、标题 思源宋体 CN Heavy、西文 思源黑体、加粗 思源黑体 CN Bold），禁止模型再检测、比较、提问字体；设置页提供可视化面板，按用途 × 中文/西文自定义任意本机字体。",
   "type": "module",
   "main": "index.js",

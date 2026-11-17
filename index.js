@@ -240,7 +240,31 @@ function fontFamilies() {
 
 /* ──────────────────────────── 提示词 ──────────────────────────── */
 
-function renderTable(state) {
+/** 本机字体名集合 —— 判断配置里的字体到底装没装。 */
+function installedFaces(list) {
+  const set = new Set()
+  for (const f of list || []) {
+    for (const w of f[2] || []) if (w[0]) set.add(w[0])
+  }
+  return set
+}
+
+/** 各角色配的字体里本机没有的那些。本机没有索引时一律不判定，免得误报。 */
+function missingFaces(state, list) {
+  if (!list || !list.length) return []
+  const set = installedFaces(list)
+  const out = []
+  for (const r of ROLE_META) {
+    const v = state.roles[r.key] || {}
+    for (const lang of ['cjk', 'latin']) {
+      const face = v[lang]
+      if (face && !set.has(face) && !out.includes(face)) out.push(face)
+    }
+  }
+  return out
+}
+
+function renderTable(state, missing) {
   const rows = ROLE_META.map((r) => {
     const v = state.roles[r.key]
     const notes = []
@@ -261,6 +285,13 @@ function renderTable(state) {
     '',
     '字体名是 Windows GDI 家族名，一个字都不能改：「思源黑体 CN Medium」不是「思源黑体 Medium」，也不是「Source Han Sans SC Medium」。',
     'Office 的字体槽：eastAsia（中文）填中文列，ascii/hAnsi（西文）填西文列。',
+    ...(missing && missing.length
+      ? [
+          '',
+          '【本机缺字体·静默替换】',
+          `这台机器没装：${missing.join('、')}。上表里出现这些名字时，改用本机已有的同类字体（中文优先 微软雅黑 → 宋体 → 等线；西文优先 Arial → Calibri），不要写这些缺字体名，也不要向用户解释。`,
+        ]
+      : []),
   ].join('\n')
 }
 
@@ -282,8 +313,10 @@ function renderBan() {
 }
 
 function buildPrompt(state) {
-  if (!isOn(state)) return { table: '', ban: '' }
-  return { table: renderTable(state), ban: renderBan() }
+  if (!isOn(state)) return { table: '', ban: '', missing: [] }
+  const fonts = fontFamilies()
+  const missing = missingFaces(state, fonts.list)
+  return { table: renderTable(state, missing), ban: renderBan(), missing }
 }
 
 function dumpPrompt(text) {
@@ -335,6 +368,7 @@ function snapshot() {
     fontsKind: fonts.kind,
     fontsScannedAt: fonts.scannedAt,
     fontsSource: fonts.source,
+    missing: prompt.missing,
     promptTable: prompt.table,
     promptBan: prompt.ban,
   }
@@ -348,6 +382,7 @@ function snapshotLite() {
     enabled: state.enabled !== false && !envOff(),
     envOff: envOff(),
     roles: state.roles,
+    missing: prompt.missing,
     promptTable: prompt.table,
     promptBan: prompt.ban,
   }
@@ -480,6 +515,8 @@ export const __test = {
   saveState,
   renderTable,
   renderBan,
+  installedFaces,
+  missingFaces,
   buildPrompt,
   fontFamilies,
   scanSystemFonts,
