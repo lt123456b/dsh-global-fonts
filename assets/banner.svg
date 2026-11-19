@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="dsh-global-fonts — stop asking which font">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1220"/>
+      <stop offset="100%" stop-color="#1b2437"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="320" fill="url(#bg)"/>
+  <rect x="0" y="0" width="8" height="320" fill="url(#accent)"/>
+
+  <!-- 装饰网格 -->
+  <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+    <path d="M0 80h1200M0 160h1200M0 240h1200"/>
+    <path d="M200 0v320M400 0v320M600 0v320M800 0v320M1000 0v320"/>
+  </g>
+
+  <text x="72" y="106" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif"
+        font-size="30" fill="#7dd3fc" letter-spacing="2">DSH PLUGIN</text>
+
+  <text x="72" y="182" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif"
+        font-size="64" font-weight="700" fill="#f8fafc">dsh-global-fonts</text>
+
+  <text x="72" y="242" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif"
+        font-size="30" fill="#cbd5e1">让 AI 写 Word 时别再挑字体</text>
+
+  <g font-family="'JetBrains Mono', 'Cascadia Code', Consolas, monospace" font-size="22">
+    <rect x="72" y="264" width="392" height="40" rx="8" fill="#0f172a" stroke="#334155"/>
+    <text x="90" y="291" fill="#94a3b8">npm i </text>
+    <text x="172" y="291" fill="#e2e8f0">dsh-global-fonts</text>
+  </g>
+
+  <!-- 右侧字体方块 -->
+  <g opacity="0.9">
+    <rect x="892" y="58" width="120" height="120" rx="14" fill="#111c2f" stroke="#334155"/>
+    <text x="952" y="132" text-anchor="middle" font-size="56" font-weight="700"
+          font-family="-apple-system, 'Noto Serif CJK SC', 'SimSun', serif" fill="#e0e7ff">宋</text>
+
+    <rect x="1024" y="86" width="96" height="96" rx="12" fill="#111c2f" stroke="#334155"/>
+    <text x="1072" y="150" text-anchor="middle" font-size="44" font-weight="500"
+          font-family="-apple-system, 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif" fill="#bae6fd">黑</text>
+
+    <rect x="892" y="192" width="228" height="76" rx="12" fill="#111c2f" stroke="#334155"/>
+    <text x="906" y="222" font-size="16" fill="#94a3b8" font-family="-apple-system, 'Segoe UI', sans-serif">正文</text>
+    <text x="906" y="250" font-size="20" fill="#e2e8f0" font-family="'JetBrains Mono', Consolas, monospace">CN Medium</text>
+  </g>
+</svg>

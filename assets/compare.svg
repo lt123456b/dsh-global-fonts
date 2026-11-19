@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560" role="img" aria-label="before and after using dsh-global-fonts">
+  <defs>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#131c2e"/>
+      <stop offset="100%" stop-color="#0d1523"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1100" height="560" fill="#0b1220"/>
+
+  <text x="550" y="56" text-anchor="middle" font-size="30" font-weight="700" fill="#f8fafc"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif">
+    同一句话，两种结果
+  </text>
+
+  <!-- 左：没有插件 -->
+  <g>
+    <rect x="60" y="96" width="470" height="420" rx="18" fill="url(#card)" stroke="#3f2b3b"/>
+    <rect x="60" y="96" width="470" height="52" rx="18" fill="#2a1720"/>
+    <text x="86" y="129" font-size="20" font-weight="600" fill="#fca5a5"
+          font-family="-apple-system, 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif">没有它</text>
+
+    <g font-family="'JetBrains Mono', 'Cascadia Code', Consolas, monospace" font-size="16">
+      <text x="86" y="188" fill="#94a3b8">你 › 做个汇报文档</text>
+      <text x="86" y="228" fill="#fbbf24">AI › 请问希望用什么字体？</text>
+      <text x="86" y="268" fill="#94a3b8">你 › 思源黑体</text>
+      <text x="86" y="308" fill="#fbbf24">AI › 好的，正文用「思源黑体 Medium」</text>
+      <text x="86" y="348" fill="#ef4444">⚠ 这个字体不存在</text>
+      <text x="86" y="388" fill="#ef4444">⚠ Word 静默替换成别的</text>
+    </g>
+
+    <rect x="86" y="418" width="418" height="66" rx="10" fill="#1f1218" stroke="#4b2233"/>
+    <text x="104" y="447" font-size="16" fill="#f87171"
+          font-family="-apple-system, 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif">结果：字体名错，来回问 3 轮，</text>
+    <text x="104" y="471" font-size="16" fill="#f87171"
+          font-family="-apple-system, 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif">token 花在挑字体上</text>
+  </g>
+
+  <!-- 箭头 -->
+  <g transform="translate(548 300)">
+    <circle r="30" fill="#1e293b" stroke="#334155"/>
+    <path d="M-10 0h18m-7-7 7 7-7 7" stroke="#7dd3fc" stroke-width="3" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- 右：有插件 -->
+  <g>
+    <rect x="570" y="96" width="470" height="420" rx="18" fill="url(#card)" stroke="#1d3b4a"/>
+    <rect x="570" y="96" width="470" height="52" rx="18" fill="#0e2431"/>
+    <text x="596" y="129" font-size="20" font-weight="600" fill="#7dd3fc"
+          font-family="-apple-system, 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif">有它</text>
+
+    <g font-family="'JetBrains Mono', 'Cascadia Code', Consolas, monospace" font-size="16">
+      <text x="596" y="188" fill="#94a3b8">你 › 做个汇报文档</text>
+      <text x="596" y="228" fill="#86efac">AI › 好的，正文 思源黑体 CN Medium</text>
+      <text x="596" y="268" fill="#86efac">     标题 思源宋体 CN Heavy</text>
+      <text x="596" y="308" fill="#64748b">（直接照表套，不闻不问）</text>
+      <text x="596" y="348" fill="#7dd3fc">✓ 字体名和本机完全一致</text>
+      <text x="596" y="388" fill="#7dd3fc">✓ Word 打开就是这套</text>
+    </g>
+
+    <rect x="596" y="418" width="418" height="66" rx="10" fill="#0c1d24" stroke="#1e4a5c"/>
+    <text x="614" y="447" font-size="16" fill="#7dd3fc"
+          font-family="-apple-system, 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif">结果：一次到位，零追问，</text>
+    <text x="614" y="471" font-size="16" fill="#7dd3fc"
+          font-family="-apple-system, 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif">token 全省下来</text>
+  </g>
+</svg>

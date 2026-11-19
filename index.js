@@ -388,13 +388,25 @@ function snapshotLite() {
   }
 }
 
-function makeHandler() {
+function makeHandler(connection) {
   return async function handleApi(req, res) {
     const reply = (status, obj) => {
       res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
       res.end(JSON.stringify(obj))
     }
     if (!isLoopback(req)) return reply(403, { ok: false, error: '只接受本机请求' })
+
+    // 走 DSH 自己的 Host / Origin / 浏览器认证准入，和 webServer 的受信路由同一套规则。
+    // 没有这一步，浏览器里任意网页都能 fetch 到 127.0.0.1 的这个端口。
+    if (connection && typeof connection.requestRejection === 'function') {
+      let rejected
+      try {
+        rejected = connection.requestRejection({ headers: req.headers })
+      } catch {
+        rejected = 403
+      }
+      if (rejected) return reply(rejected, { ok: false, error: '拒绝跨源或未认证的请求' })
+    }
 
     try {
       let op = ''
@@ -500,9 +512,9 @@ export function apply(ctx) {
   )
 
   // 3) 设置页面板用的 HTTP API（只本机回环）。
-  ctx.inject(['webServer'], (wctx) => {
+  ctx.inject(['webServer', 'connection'], (wctx) => {
     wctx.effect(
-      () => wctx.webServer.register({ kind: 'exact', path: ROUTE, handler: makeHandler() }),
+      () => wctx.webServer.register({ kind: 'exact', path: ROUTE, handler: makeHandler(wctx.connection) }),
       'dsh-global-fonts: API 路由',
     )
   })
